@@ -34,7 +34,7 @@ class SearchService:
             data = res.json()
 
             # 관련 글 링크
-            links = [data["items"][i]["link"] for i in range(min(3, len(data["items"])))]
+            links = [data["items"][i]["link"] for i in range(min(5, len(data["items"])))]
 
             # 블로그 글 가져오기 
             contents = [SearchService.fetch_post_content(link) for link in links]
@@ -78,7 +78,7 @@ class SearchService:
             temperature=0,
             openai_api_key=api_key,
             max_tokens=2000,
-            model_name="gpt-4o-mini",
+            model_name="gpt-4o",
             request_timeout=120,
         )
         chain = load_qa_chain(llm, chain_type="stuff")
