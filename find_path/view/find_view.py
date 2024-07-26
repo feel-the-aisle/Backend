@@ -1,4 +1,6 @@
 from flask import Flask, Blueprint, request, jsonify
+import sys, os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from service import find_service as fc
 
 app = Flask(__name__)
