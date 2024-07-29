@@ -20,114 +20,91 @@ class Node:
   def __eq__(self, other):
     return self.position == other.position
 
+def cost_check(node, goal, D=1):  # 상하좌우에 대한 가중치
+  # node: 현재 노드, position- 현재 노드의 위치를 지칭하는 것
+  # goal: 목표 노드(도착 지점)
+  # D: 상하좌우 이동에 대한 비용계산. = 1
+  left_right = abs(node.position[0] - goal.position[0])
+  top_bottom = abs(node.position[1] - goal.position[1])
+  return D * (left_right + top_bottom)
+
+# 경로 찾기
+def find_shortest_path(maze, start, end):
+  # 시작/ 도착 지점 초기화
+  startNode = Node(None, start)
+  endNode = Node(None, end)
+  # 저장 경로 초기화(reserve = 계산 중 / final = 결정된 것)
+  reserveList = []
+  finalList = []
+  # reserveList에 시작 노드 추가
+  reserveList.append(startNode)
+  # 도착 지점을 찾을 때까지 실행 ( endNode 찾기까지 샐행 )
+  while reserveList:
+    # 현재 노드 지정
+    currentNode = reserveList[0]
+    currentIdx = 0
+
+    # 이미 같은 노드가 reserveList에 있고, f 값이 더 크면
+    # currentNode를 reserveList안에 있는 값으로 교체
+    for index, item in enumerate(reserveList):
+      if item.f < currentNode.f:
+        currentNode = item
+        currentIdx = index
+    # reserveList에서 제거 후 finalList에 추가
+    reserveList.pop(currentIdx)
+    finalList.append(currentNode)
+    # 현재 노드가 목적지면 current.position 추가하고
+    # current의 부모로 이동
+    if currentNode == endNode:
+      path = []
+      current = currentNode
+      while current is not None:
+        path.append(current.position)
+        current = current.parent
+      return path[::-1]  # reverse
+    children = []
+    # 인접한 xy좌표 상하좌우
+    for newPosition in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+      # 노드 위치 추가
+      nodePosition = (
+          currentNode.position[0] + newPosition[0],  # X
+          currentNode.position[1] + newPosition[1])  # Y
+      # maze index 범위 안에 있어야함
+      within_range_criteria = [
+          nodePosition[0] > (len(maze) - 1),
+          nodePosition[0] < 0,
+          nodePosition[1] > (len(maze[len(maze) - 1]) - 1),
+          nodePosition[1] < 0,
+      ]
+      # 하나라도 true면 범위 밖
+      if any(within_range_criteria):
+        continue
+      # 장애물 판단후 이동
+      # <진열대> 라면 : 1 / 음료 : 2 / 과자 : 3 / 기타 : 4
+      #          카운터 : 5 / 입구 : 6
+      if maze[nodePosition[0]][nodePosition[1]] in [1, 2, 3, 4, 5]:
+        continue
+      new_node = Node(currentNode, nodePosition)
+      children.append(new_node)
+    # 자식 loop
+    for child in children:
+      # 자식이 finalList에 있으면 진행
+      if child in finalList:
+        continue
+      # f, g, h값 업데이트
+      child.g = currentNode.g + 1
+      child.h = cost_check(child, endNode)  #코스트 계산 값
+      child.f = child.g + child.h
+      # 자식이 reserveList에 존재 && g 값이 더 크면 진행
+      if len([
+          openNode for openNode in reserveList
+          if child == openNode and child.g > openNode.g
+      ]) > 0:
+        continue
+      reserveList.append(child)
+
+
 class Detectservice:
-  
-  # 상하좌우 가중치
-  @staticmethod
-  def cost_check(node, goal, D=1):  # 상하좌우에 대한 가중치
-    # node: 현재 노드, position- 현재 노드의 위치를 지칭하는 것
-    # goal: 목표 노드(도착 지점)
-    # D: 상하좌우 이동에 대한 비용계산. = 1
-    left_right = abs(node.position[0] - goal.position[0])
-    top_bottom = abs(node.position[1] - goal.position[1])
-    return D * (left_right + top_bottom)
-
-
-  # 경로 찾기
-  @staticmethod
-  def find_shortest_path(maze, start, end):
-    # 시작/ 도착 지점 초기화
-    startNode = Node(None, start)
-    endNode = Node(None, end)
-
-    # 저장 경로 초기화(reserve = 계산 중 / final = 결정된 것)
-    reserveList = []
-    finalList = []
-
-    # reserveList에 시작 노드 추가
-    reserveList.append(startNode)
-
-    # 도착 지점을 찾을 때까지 실행 ( endNode 찾기까지 샐행 )
-    while reserveList:
-
-      # 현재 노드 지정
-      currentNode = reserveList[0]
-      currentIdx = 0
-
-      # 이미 같은 노드가 reserveList에 있고, f 값이 더 크면
-      # currentNode를 reserveList안에 있는 값으로 교체
-      for index, item in enumerate(reserveList):
-        if item.f < currentNode.f:
-          currentNode = item
-          currentIdx = index
-
-      # reserveList에서 제거 후 finalList에 추가
-      reserveList.pop(currentIdx)
-      finalList.append(currentNode)
-
-      # 현재 노드가 목적지면 current.position 추가하고
-      # current의 부모로 이동
-      if currentNode == endNode:
-        path = []
-        current = currentNode
-        while current is not None:
-          path.append(current.position)
-          current = current.parent
-        return path[::-1]  # reverse
-
-      children = []
-
-      # 인접한 xy좌표 상하좌우
-      for newPosition in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
-
-        # 노드 위치 추가
-        nodePosition = (
-            currentNode.position[0] + newPosition[0],  # X
-            currentNode.position[1] + newPosition[1])  # Y
-
-        # maze index 범위 안에 있어야함
-        within_range_criteria = [
-            nodePosition[0] > (len(maze) - 1),
-            nodePosition[0] < 0,
-            nodePosition[1] > (len(maze[len(maze) - 1]) - 1),
-            nodePosition[1] < 0,
-        ]
-
-        # 하나라도 true면 범위 밖
-        if any(within_range_criteria):
-          continue
-
-        # 장애물 판단후 이동
-        # <진열대> 라면 : 1 / 음료 : 2 / 과자 : 3 / 기타 : 4
-        #          카운터 : 5 / 입구 : 6
-        if maze[nodePosition[0]][nodePosition[1]] in [1, 2, 3, 4, 5]:
-          continue
-
-        new_node = Node(currentNode, nodePosition)
-        children.append(new_node)
-
-      # 자식 loop
-      for child in children:
-
-        # 자식이 finalList에 있으면 진행
-        if child in finalList:
-          continue
-
-        # f, g, h값 업데이트
-        child.g = currentNode.g + 1
-        child.h = cost_check(child, endNode)  #코스트 계산 값
-        child.f = child.g + child.h
-
-        # 자식이 reserveList에 존재 && g 값이 더 크면 진행
-        if len([
-            openNode for openNode in reserveList
-            if child == openNode and child.g > openNode.g
-        ]) > 0:
-          continue
-
-        reserveList.append(child)
-
-
   # 지도의 가로, 세로 규격 전역 변수에 저장 (row: 가로, col: 세로)
   @staticmethod
   def get_maze_size(storeName):
