@@ -9,20 +9,29 @@ class ConvenienceStoreInfo(db.Model):
     storename = db.Column(db.String(32))
     storerow = db.Column(db.Integer)
     storecol = db.Column(db.Integer)
+    
+    # 관계 설정
+    maps = db.relationship('ConvenienceStoreMap', backref='store_info', lazy=True)
 
     def to_dict(self):
         return {
             'id': self.id,
             'storename': self.storename,
             'storerow': self.storerow,
-            'storecol': self.storecol
+            'storecol': self.storecol,
+            'maps': [map.to_dict() for map in self.maps]
+        }
+    def to_id(self):
+        return {
+            'id': self.id,
+            'storename': self.storename
         }
 
 class ConvenienceStoreMap(db.Model):
     __tablename__ = 'ConvenienceStoreMap'
     
     id = db.Column(db.Integer, primary_key=True)
-    storeinfoid = db.Column(db.Integer, db.ForeignKey('ConvenienceStoreInfo.id'))
+    storeinfoid = db.Column(db.Integer, db.ForeignKey('ConvenienceStoreInfo.id'), nullable=False)
     storex = db.Column(db.Integer)
     storey = db.Column(db.Integer)
     storestate = db.Column(db.Integer)
@@ -33,5 +42,5 @@ class ConvenienceStoreMap(db.Model):
             'storeinfoid': self.storeinfoid,
             'storex': self.storex,
             'storey': self.storey,
-            'storestate': self.storestate
+            'storestate': self.storestate,
         }
