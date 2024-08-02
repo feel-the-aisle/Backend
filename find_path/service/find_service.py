@@ -124,9 +124,9 @@ class Detectservice:
 
     storeMaze = [[0] * galo for i in range(selo)]
 
-    storeMap = ConvenienceStoreInfo.query.filter_by(storeinfoid = ids).all()
-
-    for storeMap in storeMap:
+    storeMap2 = ConvenienceStoreMap.query.filter_by(storeinfoid = ids).all()
+    
+    for storeMap in storeMap2:
       row = storeMap.storex
       col = storeMap.storey
       sangte = storeMap.storestate
@@ -201,6 +201,9 @@ class Detectservice:
     pointGalo2 = int(calcullateGalo2 / count2)  # 도착 지점의 가로 중간
     pointSelo2 = int(calcullateSelo2 / count2)  # 도착 지점의 세로 중간
 
+    oriGalo = pointGalo2
+    oriSelo = pointSelo2
+
     # 각 지점의 값이 움직임이 가능한 부분인지 확인하기
     # <<< 가중치 순서 [ 1 우 ][ 2 좌 ][ 3 하 ][ 4 상 ] >>>
     # 출발 가로 좌표에 대한 검사.
@@ -254,4 +257,127 @@ class Detectservice:
     arr.append(pointSelo1)
     arr.append(pointGalo2)
     arr.append(pointSelo2)
+    arr.append(oriGalo)
+    arr.append(oriSelo)
     return arr
+  
+
+  #-------------- 도착 지점으로 부터 진열대의 위치 판단 --------------
+  def set_three_position(maze, start, end):
+    coordinates= find_shortest_path(maze, start, end)
+    threeElements= coordinates[-3:]
+    threeElements= coordinates[len(coordinates) - 3:]
+    return threeElements
+  
+
+  def get_end_direction(arr):
+    # [0]: 3 / [1]: 2 / [2]: 1
+    x= [cor[0] for cor in arr]
+    y= [cor[1] for cor in arr]
+    dum= 0
+
+    if x[0] == x[1]:      # 3, 2번 x좌표 비교
+      if y[0] < y[1]:     # 3, 2번 y좌표 비교 ( - )
+        dum = 2           # y증가 방향이 정면임을 의미
+      else:               # 3, 2번 y좌표 비교 ( - )
+        dum = 1           # y감소 방향이 정면임을 의미
+
+      if x[1] == x[2]:    # 2, 1번 x좌표 비교
+        dum = dum
+      elif x[1] < x[2]:   # 2, 1번 x좌표 비교 ( + )
+          dum = 4
+      else:               # 2, 1번 x좌표 비교 ( - )
+          dum = 3
+
+    elif x[0] < x[1]:     # 3, 2번 x좌표 비교 ( + )
+      dum = 4
+      if x[1] == x[2]:    # 2, 1번 x좌표 비교
+        if y[1] < y[2]:   # 2, 1번 y좌표 비교 ( + )
+          dum = 2
+        else:
+          dum = 1
+
+    else:                 # 3, 2번 x좌표 비교 ( - )
+      dum = 3
+      if x[1] == x[2]:
+        if y[1] < y[2]:
+          dum = 2
+        else:
+         dum = 1
+
+    return dum
+  
+
+  def compare_coordinates(dum, e1, e2):
+    s =""
+    if dum == 1:
+      s= "x 감소 방향 (뒤에꺼)"
+    elif dum == 2:
+      s= "x 증가 방향 (뒤에꺼)"
+    elif dum == 3:
+      s= "y 감소 방향 (위에꺼)"
+    else:
+      s= "y 증가 방향 (위에꺼)"
+  
+    n1 = e1[0]
+    n2 = e1[1]
+    m1 = e2[0]
+    m2 = e2[1]
+    strPosition =""
+    if dum == 1:    # x 감소
+      if n1 == m1:            # y 값 같다.
+        if n2 < m2:           # x 비교
+          strPosition ="정면에 위치합니다."
+      else:                   # y값 다르다.
+        if n1 < m1:
+          strPosition ="오른쪽에 위치합니다."
+        else:
+          strPosition ="왼쪽에 위치합니다."
+
+              
+    elif dum == 2:  # x 증
+      if n1 == m1:
+          strPosition ="정면에 위치합니다."
+      else:
+        if n1 < m1:
+          strPosition ="왼쪽에 위치합니다."
+        else:
+          strPosition ="오른쪽에 위치합니다."
+
+
+    elif dum == 3:  # y 감
+      if n2 == m2:
+        strPosition ="정면에 위치합니다."
+      else:
+        if n2 < m2:
+          strPosition ="오른쪽에 위치합니다."
+        else:
+          strPosition ="왼쪽에 위치합니다."
+
+    elif dum == 4:  # y 증
+
+      if n2 == m2:
+        strPosition ="정면에 위치합니다."
+      else:
+        if n2 < m2:
+          strPosition ="왼쪽에 위치합니다."
+        else:
+          strPosition ="오른쪽에 위치합니다."
+    return strPosition
+
+  #-------------- connect db test --------------
+  def test():
+    storeId = ConvenienceStoreInfo.query.filter_by(storename="미래혁신관").first()
+    ids = storeId.id
+
+    storeMaze = [[0] * storeId.storerow for i in range(storeId.storecol)]
+    storeMaze = [ [0] * 16 for i in range(16)]
+    storeMap2 = ConvenienceStoreMap.query.filter_by(storeinfoid = ids).all()
+    
+    for storeMap in storeMap2:
+      row = storeMap.storex
+      col = storeMap.storey
+      sangte = storeMap.storestate
+
+      storeMaze[col][row] = sangte
+    return storeMaze
