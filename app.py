@@ -16,8 +16,8 @@ def create_app():
         from detect_products.view.detect_view import detect_bp
         app.register_blueprint(detect_bp, url_prefix='/detect-products')
         
-        #app.register_blueprint(find_view.feel_the_aisle, url_prefix='/find-path')
-        #app.register_blueprint(search_view.feel_the_aisle, url_prefix='/search-recipes')        
+        from find_path.view.find_view import findpath_bp
+        app.register_blueprint(findpath_bp, url_prefix='/find-path')        
     return app
         
 
