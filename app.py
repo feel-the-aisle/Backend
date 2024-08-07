@@ -25,6 +25,9 @@ def create_app():
         
         from save_map.view.map_view import map_bp
         app.register_blueprint(map_bp, url_prefix='/map')
+
+        from find_path.view.find_view import findpath_bp
+        app.register_blueprint(findpath_bp, url_prefix='/find-path')
         
     return app
 
