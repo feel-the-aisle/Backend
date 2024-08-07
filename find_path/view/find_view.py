@@ -41,8 +41,6 @@ def find_paths():
 #   return path
 
 
-
-# test용
 @findpath_bp.route('/connect_dbtest_path', methods=['GET'])
 def dummy():
   map = Detectservice.test()  
@@ -59,7 +57,7 @@ def dummy():
 
   strPath = Detectservice.list_to_str_path(result)
 
-  coordinate = Detectservice.set_three_position(maze, start, end)
+  coordinate = Detectservice.set_three_position(map, start, end)
   direction = Detectservice.get_end_direction(coordinate)
   endPosition = Detectservice.compare_coordinates(direction, oriend, end)
   return jsonify({'result': result, 'strPath': strPath, 'endPosition': endPosition})

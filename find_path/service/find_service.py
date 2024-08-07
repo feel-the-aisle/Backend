@@ -443,7 +443,7 @@ class Detectservice:
 
     return listPath
 
-  #-------------- connect db test --------------
+  #-------------- connect db --------------
   def test():
     storeId = ConvenienceStoreInfo.query.filter_by(storename="미래혁신관").first()
     ids = storeId.id
