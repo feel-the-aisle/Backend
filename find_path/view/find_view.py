@@ -19,15 +19,12 @@ def find_paths():
   end = (points[3], points[2])
   oriend = (points[5], points[4])   
   result = find_shortest_path(maze, start, end)
-  # path 값 = 연산 결과 예시
-  #  result = [(1, 8), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7),
-  #             (6, 6), (6, 5), (6, 4), (6, 3), (6, 2), (5, 2), (4, 2),
-  #             (3, 2), (3, 1), (2, 1)]
+  strPath = Detectservice.list_to_str_path(result)
 
   coordinate = Detectservice.set_three_position(maze, start, end)
   direction = Detectservice.get_end_direction(coordinate)
   endPosition = Detectservice.compare_coordinates(direction, oriend, end)
-  return jsonify({'result': result, 'endPosition': endPosition})
+  return jsonify({'result': result, 'strPath': strPath, 'endPosition': endPosition})
 
 
 # # 실제 연산 부분
@@ -60,7 +57,9 @@ def dummy():
   #             (6, 6), (6, 5), (6, 4), (6, 3), (6, 2), (5, 2), (4, 2),
   #             (3, 2), (3, 1), (2, 1)]
 
-  coordinate = Detectservice.set_three_position(map, start, end)
+  strPath = Detectservice.list_to_str_path(result)
+
+  coordinate = Detectservice.set_three_position(maze, start, end)
   direction = Detectservice.get_end_direction(coordinate)
   endPosition = Detectservice.compare_coordinates(direction, oriend, end)
-  return jsonify({'result': result, 'endPosition': endPosition})
+  return jsonify({'result': result, 'strPath': strPath, 'endPosition': endPosition})

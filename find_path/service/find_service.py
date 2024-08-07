@@ -365,6 +365,84 @@ class Detectservice:
           strPosition ="오른쪽에 위치합니다."
     return strPosition
 
+
+  def list_to_str_path(path):
+    # 경로 저장 리스트
+    listPath = []
+    # 상대성 저장 , 이동 횟수 확인(보류)
+    relativity = 0
+    count_move = 0
+
+    for i in range(1, len(path)):
+      prev= path[i-1]   # 과거
+      curr= path[i]     # 현재
+
+      # 상대성 판단하기
+      # 1: y down   2: y up   3: x down   4: x up
+      if i == 1:
+        if curr[0] == prev[0]:  # < y좌표 -> 같다 >
+          if curr[1] < prev[1]:  # x좌표 :: 현재 위치 < 이전 위치 == x 감소
+            relativity = 3
+          elif curr[1] > prev[1]:  # x좌표 :: 현재 위치 > 이전 위치 == x 증가
+            relativity = 4
+        elif curr[1] == prev[1]:  # < x좌표 -> 같다 >
+          if curr[0] < prev[0]:  # y좌표 :: 현재 위치 < 이전 위치 == y 감소
+            relativity = 1
+          elif curr[0] > prev[0]:  # y좌표 :: 현재 위치 > 이전 위치 == y 증가
+            relativity = 2
+
+      # 상대성에 따른 이동 listPath에 저장
+      if relativity == 1:  # y 감소 (위)
+        if curr[1] == prev[1]:  # x좌표가 같다면 y방향에 변동 없음
+          if not listPath or listPath[-1] != "직진":
+            listPath.append("직진")
+        if curr[1] < prev[1]:  # x값 현재 < 과거 // y감소 방향 (위)에서 x값 감소 (왼쪽)
+          listPath.append("좌회전")
+        elif curr[1] > prev[1]:
+          listPath.append("우회전")
+
+      elif relativity == 2:  # y 증가 (아래)
+        if curr[1] == prev[1]:  # x좌표가 같다면 y방향에 변동 없음
+          if not listPath or listPath[-1] != "직진":
+            listPath.append("직진")
+        if curr[1] < prev[1]:  # x값 현재 < 과거 // y증가 방향 (아래)에서 x값 증가 (오른쪽)
+          listPath.append("우회전")
+        elif curr[1] > prev[1]:
+          listPath.append("좌회전")
+
+      elif relativity == 3:  # x 감소 (좌)
+        if curr[0] == prev[0]:  # y좌표가 같다면 y방향에 변동 없음
+          if not listPath or listPath[-1] != "직진":
+            listPath.append("직진")
+        if curr[0] < prev[0]:  # y값 현재 < 과거 // x감소 방향 , y값 감소 (오른쪽)
+          listPath.append("우회전")
+        elif curr[0] > prev[0]:
+          listPath.append("좌회전")
+
+      elif relativity == 4:  # x 증가 (우)
+        if curr[0] == prev[0]:  # y좌표가 같다면 y방향에 변동 없음
+          if not listPath or listPath[-1] != "직진":
+            listPath.append("직진")
+        if curr[0] < prev[0]:  # y값 현재 < 과거 // x증가 방향 , y값 감소 (왼쪽)
+          listPath.append("좌회전")
+        elif curr[0] > prev[0]:
+          listPath.append("우회전")
+
+      # 상대성 판단하기 relativity
+      # 1: y 감소 | 2: y 증가 | 3: x 감소 | 4: x 증가
+      if curr[0] == prev[0]:  # < y좌표 -> 같다 >
+        if curr[1] < prev[1]:  # x좌표 :: 현재 위치 < 이전 위치 == x 감소
+          relativity = 3
+        elif curr[1] > prev[1]:  # x좌표 :: 현재 위치 > 이전 위치 == x 증가
+          relativity = 4
+      elif curr[1] == prev[1]:  # < x좌표 -> 같다 >
+        if curr[0] < prev[0]:  # y좌표 :: 현재 위치 < 이전 위치 == y 감소
+          relativity = 1
+        elif curr[0] > prev[0]:  # y좌표 :: 현재 위치 > 이전 위치 == y 증가
+          relativity = 2
+
+    return listPath
+
   #-------------- connect db test --------------
   def test():
     storeId = ConvenienceStoreInfo.query.filter_by(storename="미래혁신관").first()
