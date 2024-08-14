@@ -22,21 +22,7 @@ def find_paths():
   strPath = Detectservice.list_to_str_path(result)
   direction = Detectservice.get_end_direction(result)
   endPosition = Detectservice.check_position(direction, size[1], size[0], end, maze, endP)
-  return jsonify({'result': result, 'strPath': strPath, 'endPosition': endPosition, 'selo': size[1], 'galo': size[0]})
-
-
-# # 실제 연산 부분
-# def setup_map_and_positions(storeName, startP, endP):
-#   size = Detectservice.get_maze_size(storeName) # 지도의 가로, 세로 규격 가져오기
-
-#   maze = Detectservice.create_maze(storeName, size[0], size[1]) # 지도 만들기
-
-#   points = Detectservice.get_start_end(startP, endP, size[1], size[0], maze) # 출발, 도착 지점 가져오기
-#   start = (points[1], points[0]) # [0]: 출발 가로, [1]: 출발 세로
-#   end = (points[3], points[2])   # [2]: 도착 가로, [3]: 도착 세로
-
-#   path = find_shortest_path(maze, start, end) # 경로 찾기 
-#   return path
+  return jsonify({'result': result, 'strPath': strPath, 'endPosition': endPosition, 'storeSelo': size[1], 'storeGalo': size[0]})
 
 
 @findpath_bp.route('/connect_dbtest_path', methods=['GET'])

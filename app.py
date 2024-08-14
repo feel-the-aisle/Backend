@@ -36,13 +36,47 @@ def insert_dummy_data():
     
     # 더미 데이터 생성
     store1 = ConvenienceStoreInfo(storename="미래혁신관 CU")
-    store2 = ConvenienceStoreInfo(storename="경상관 CU")
+    store2 = ConvenienceStoreInfo(storename="경상관 CU", storerow=16, storecol=17)
     store3 = ConvenienceStoreInfo(storename="수원대학교 CU")
-    
-    
     db.session.add(store1)
     db.session.add(store2)
     db.session.add(store3)
+
+    coordinates = [(5, 3), (5, 4), (5, 5), (5, 6), (5, 7), (5, 8), (5, 9), (5, 10)]
+    for x, y in coordinates:    # 1
+        map_entry = ConvenienceStoreMap(storeinfoid=2, storex=x, storey=y, storestate=1)
+        db.session.add(map_entry)
+    coordinates = [(9,0), (10,0), (11,0), (12,0), (13,0), (14,0), (15,0)]
+    for x, y in coordinates:    # 2
+        map_entry = ConvenienceStoreMap(storeinfoid=2, storex=x, storey=y, storestate=2)
+        db.session.add(map_entry)
+    coordinates = [(6,3), (8,3), (6,4), (8,4), (6,5), (8,5), (6,6), (8,6), (6,7), (8,7), (6,8), (8,8), (6,9), (8,9), (6,10), (8,10)]
+    for x, y in coordinates:    # 3
+        map_entry = ConvenienceStoreMap(storeinfoid=2, storex=x, storey=y, storestate=3)
+        db.session.add(map_entry)
+    coordinates = [(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0), (7,0), (0,1), (0,2), (9,3), (11,3), (9,4), (11,4), (9,5), (11,5), (9,6), (9,7), (9,8), (9,9), (9,10), (4, 13), (5,13)]
+    for x, y in coordinates:    # 4
+        map_entry = ConvenienceStoreMap(storeinfoid=2, storex=x, storey=y, storestate=4)
+        db.session.add(map_entry)
+    coordinates = [(2,3), (2,4), (2,5), (2,6), (2,7), (2,8), (2,9), (2,10)]
+    for x, y in coordinates:    # 5
+        map_entry = ConvenienceStoreMap(storeinfoid=2, storex=x, storey=y, storestate=5)
+        db.session.add(map_entry)
+    coordinates = [(1,16), (2,16), (3,16)]
+    for x, y in coordinates:    # 6
+        map_entry = ConvenienceStoreMap(storeinfoid=2, storex=x, storey=y, storestate=6)
+        db.session.add(map_entry)
+    coordinates = [(11,7), (11,8), (11,9)]
+    for x, y in coordinates:    # 7
+        map_entry = ConvenienceStoreMap(storeinfoid=2, storex=x, storey=y, storestate=7)
+        db.session.add(map_entry)
+    coordinates = []
+    for x, y in coordinates:    # 8
+        map_entry = ConvenienceStoreMap(storeinfoid=2, storex=x, storey=y, storestate=8)
+        db.session.add(map_entry)
+    
+    
+
     
     db.session.commit()
 
