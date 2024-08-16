@@ -20,6 +20,7 @@ class Node:
   def __eq__(self, other):
     return self.position == other.position
 
+@staticmethod
 def cost_check(node, goal, D=1):  # 상하좌우에 대한 가중치
   # node: 현재 노드, position- 현재 노드의 위치를 지칭하는 것
   # goal: 목표 노드(도착 지점)
@@ -29,6 +30,7 @@ def cost_check(node, goal, D=1):  # 상하좌우에 대한 가중치
   return D * (left_right + top_bottom)
 
 # 경로 찾기
+@staticmethod
 def find_shortest_path(maze, start, end):
   # 시작/ 도착 지점 초기화
   startNode = Node(None, start)
@@ -81,8 +83,8 @@ def find_shortest_path(maze, start, end):
         continue
       # 장애물 판단후 이동
       # <진열대> 라면 : 1 / 음료 : 2 / 과자 : 3 / 기타 : 4
-      #          카운터 : 5 / 입구 : 6
-      if maze[nodePosition[0]][nodePosition[1]] in [1, 2, 3, 4, 5]:
+      #          카운터 : 5 / 입구 : 6 / 조리(물 받기, 전자레인지) : 7 / 이동 불가 부분 나누기(쓰레기통 같은거) : 8
+      if maze[nodePosition[0]][nodePosition[1]] in [1, 2, 3, 4, 5, 7, 8]:
         continue
       new_node = Node(currentNode, nodePosition)
       children.append(new_node)
@@ -262,110 +264,126 @@ class Detectservice:
     return arr
   
 
-  #-------------- 도착 지점으로 부터 진열대의 위치 판단 --------------
-  def set_three_position(maze, start, end):
-    coordinates= find_shortest_path(maze, start, end)
-    threeElements= coordinates[-3:]
-    threeElements= coordinates[len(coordinates) - 3:]
-    return threeElements
-  
-
+  #-------------- 도착 지점으로 부터 진열대의 위치 판단 --------------  
+  @staticmethod
   def get_end_direction(arr):
-    # [0]: 3 / [1]: 2 / [2]: 1
-    x= [cor[0] for cor in arr]
-    y= [cor[1] for cor in arr]
-    dum= 0
+    dum = 0
+    ltwo_ele = arr[-2:]
 
-    if x[0] == x[1]:      # 3, 2번 x좌표 비교
-      if y[0] < y[1]:     # 3, 2번 y좌표 비교 ( - )
-        dum = 2           # y증가 방향이 정면임을 의미
-      else:               # 3, 2번 y좌표 비교 ( - )
-        dum = 1           # y감소 방향이 정면임을 의미
+    fy, fx = ltwo_ele[0]  # 종점 1전
+    ly, lx = ltwo_ele[1]  # 종점
 
-      if x[1] == x[2]:    # 2, 1번 x좌표 비교
-        dum = dum
-      elif x[1] < x[2]:   # 2, 1번 x좌표 비교 ( + )
-          dum = 4
-      else:               # 2, 1번 x좌표 비교 ( - )
-          dum = 3
-
-    elif x[0] < x[1]:     # 3, 2번 x좌표 비교 ( + )
-      dum = 4
-      if x[1] == x[2]:    # 2, 1번 x좌표 비교
-        if y[1] < y[2]:   # 2, 1번 y좌표 비교 ( + )
-          dum = 2
-        else:
-          dum = 1
-
-    else:                 # 3, 2번 x좌표 비교 ( - )
-      dum = 3
-      if x[1] == x[2]:
-        if y[1] < y[2]:
-          dum = 2
-        else:
-         dum = 1
+    if fx == lx:  # 종점과 x가 같음
+      if fy < ly:  # 종점 y가 더 큼 ( y 증가 방향 )
+        dum = 2
+      else:  # 종점 y가 더 작음 ( y 감소 방향 )
+        dum = 1
+    elif fy == ly:
+      if fx < lx:  # 종점 x가 더 큼 ( x 증가 방향 )
+        dum = 4
+      else:  # 종점 x가 더 작음 ( x 감소 방향 )
+        dum = 3
 
     return dum
   
+  @staticmethod
+  def check_position(position, selo, galo, endP, map, item):
+    num1 = 0
+    str_end = ""
+    arr = []
 
-  def compare_coordinates(dum, e1, e2):
-    s =""
-    if dum == 1:
-      s= "x 감소 방향 (뒤에꺼)"
-    elif dum == 2:
-      s= "x 증가 방향 (뒤에꺼)"
-    elif dum == 3:
-      s= "y 감소 방향 (위에꺼)"
+    arr.append(endP[0] -1)  # 0 --------------------
+    arr.append(endP[1])     # 1
+    arr.append(endP[0])     # 2 --------------------
+    arr.append(endP[1] +1)  # 3
+    arr.append(endP[0] +1)  # 4 --------------------
+    arr.append(endP[1])     # 5
+    arr.append(endP[0])     # 6 --------------------
+    arr.append(endP[1] -1)  # 7
+
+    if endP[0] == selo: # 세로가 최대치로 같다
+      del arr[4]
+      arr.insert(4, endP[0])
+    elif endP[0] == 0:
+      del arr[0]
+      arr.insert(0, endP[0])
+
+    if endP[1] == galo:
+      del arr[3]
+      arr.insert(3, endP[1])
+    elif endP[1] == 0:
+      del arr[7]
+      arr.insert(7, endP[1])
+
+
+    if item == "라면" or item == "라면 진열대" or item == "라면진열대":
+      num1 = 1
+    elif item == "음료" or item == "음료 진열대" or item == "음료진열대":
+      num1 = 2
+    elif item == "과자" or item == "과자 진열대" or item == "과자진열대":
+      num1 = 3
+    elif item == "기타" or item == "기타 진열대" or item == "기타진열대":
+      num1 = 4
+    elif item == "카운터":
+      num1 = 5
+    elif item == "입구":
+      num1 = 6
+
+    directions = []
+
+    if map[arr[0]][arr[1]] == num1:  # y 감소 방향
+      if position == 1:
+        directions.append("정면에 위치합니다.")
+      elif position == 3:
+        directions.append("우측에 위치합니다.")
+      elif position == 4:
+        directions.append("좌측에 위치합니다.")
+
+    if map[arr[2]][arr[3]] == num1:  # x 증가 방향
+      if position == 4:
+        directions.append("정면에 위치합니다.")
+      elif position == 1:
+        directions.append("우측에 위치합니다.")
+      elif position == 2:
+        directions.append("좌측에 위치합니다.")
+
+    if map[arr[4]][arr[5]] == num1:  # y 증가 방향
+      if position == 2:
+        directions.append("정면에 위치합니다.")
+      elif position == 3:
+        directions.append("좌측에 위치합니다.")
+      elif position == 4:
+        directions.append("우측에 위치합니다.")
+
+    if map[arr[6]][arr[7]] == num1:  # x 감소 방향
+      if position == 3:
+        directions.append("정면에 위치합니다.")
+      elif position == 1:
+        directions.append("좌측에 위치합니다.")
+      elif position == 2:
+        directions.append("우측에 위치합니다.")
+
+    if "정면에 위치합니다." in directions:
+      if "좌측에 위치합니다." in directions and "우측에 위치합니다." in directions:
+        str_end = "정면 및 양쪽 모두 위치합니다."
+      elif "좌측에 위치합니다." in directions:
+        str_end = "정면 및 좌측에 위치합니다."
+      elif "우측에 위치합니다." in directions:
+        str_end = "정면 및 우측에 위치합니다."
+      else:
+        str_end = "정면에 위치합니다."
     else:
-      s= "y 증가 방향 (위에꺼)"
-  
-    n1 = e1[0]
-    n2 = e1[1]
-    m1 = e2[0]
-    m2 = e2[1]
-    strPosition =""
-    if dum == 1:    # x 감소
-      if n1 == m1:            # y 값 같다.
-        if n2 < m2:           # x 비교
-          strPosition ="정면에 위치합니다."
-      else:                   # y값 다르다.
-        if n1 < m1:
-          strPosition ="오른쪽에 위치합니다."
-        else:
-          strPosition ="왼쪽에 위치합니다."
+      if "좌측에 위치합니다." in directions and "우측에 위치합니다." in directions:
+        str_end = "양쪽 모두 위치합니다."
+      elif "좌측에 위치합니다." in directions:
+        str_end = "좌측에 위치합니다."
+      elif "우측에 위치합니다." in directions:
+        str_end = "우측에 위치합니다."
 
-              
-    elif dum == 2:  # x 증
-      if n1 == m1:
-          strPosition ="정면에 위치합니다."
-      else:
-        if n1 < m1:
-          strPosition ="왼쪽에 위치합니다."
-        else:
-          strPosition ="오른쪽에 위치합니다."
+    return str_end
 
 
-    elif dum == 3:  # y 감
-      if n2 == m2:
-        strPosition ="정면에 위치합니다."
-      else:
-        if n2 < m2:
-          strPosition ="오른쪽에 위치합니다."
-        else:
-          strPosition ="왼쪽에 위치합니다."
-
-    elif dum == 4:  # y 증
-
-      if n2 == m2:
-        strPosition ="정면에 위치합니다."
-      else:
-        if n2 < m2:
-          strPosition ="왼쪽에 위치합니다."
-        else:
-          strPosition ="오른쪽에 위치합니다."
-    return strPosition
-
-
+  @staticmethod
   def list_to_str_path(path):
     # 경로 저장 리스트
     listPath = []
@@ -378,7 +396,7 @@ class Detectservice:
       curr= path[i]     # 현재
 
       # 상대성 판단하기
-      # 1: y down   2: y up   3: x down   4: x up
+      # 1: y 감   2: y 증   3: x 감   4: x 증
       if i == 1:
         if curr[0] == prev[0]:  # < y좌표 -> 같다 >
           if curr[1] < prev[1]:  # x좌표 :: 현재 위치 < 이전 위치 == x 감소
@@ -444,18 +462,29 @@ class Detectservice:
     return listPath
 
   #-------------- connect db --------------
-  def test():
-    storeId = ConvenienceStoreInfo.query.filter_by(storename="미래혁신관").first()
-    ids = storeId.id
+  @staticmethod
+  def test_maze():
+    storein_school = [[4, 4, 4, 4, 4, 4, 4, 4, 0, 2, 2, 2, 2, 2, 2, 2],
+                      [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+                      [8, 8, 5, 0, 0, 1, 3, 0, 3, 4, 0, 8, 0, 0, 0, 8],
+                      [0, 0, 5, 0, 0, 1, 3, 0, 3, 4, 0, 8, 8, 0, 0, 8],
+                      [0, 0, 5, 0, 0, 1, 3, 0, 3, 4, 0, 8, 8, 0, 0, 8],
+                      [0, 0, 5, 0, 0, 1, 3, 0, 3, 4, 0, 8, 8, 0, 0, 8],
+                      [0, 0, 5, 0, 0, 1, 3, 0, 3, 4, 0, 7, 8, 0, 0, 8],
+                      [0, 0, 5, 0, 0, 1, 3, 0, 3, 4, 0, 7, 8, 0, 0, 8],
+                      [0, 0, 5, 0, 0, 1, 3, 0, 3, 4, 0, 8, 8, 0, 0, 8],
+                      [0, 0, 5, 0, 0, 1, 3, 0, 3, 4, 0, 8, 8, 0, 0, 8],
+                      [8, 8, 5, 0, 0, 1, 3, 0, 3, 4, 0, 8, 8, 0, 0, 8],
+                      [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+                      [8, 0, 0, 0, 4, 4, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+                      [8, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [8, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 6, 6, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    return storein_school
 
-    storeMaze = [[0] * storeId.storerow for i in range(storeId.storecol)]
-    storeMaze = [ [0] * 16 for i in range(16)]
-    storeMap2 = ConvenienceStoreMap.query.filter_by(storeinfoid = ids).all()
-    
-    for storeMap in storeMap2:
-      row = storeMap.storex
-      col = storeMap.storey
-      sangte = storeMap.storestate
-
-      storeMaze[col][row] = sangte
-    return storeMaze
+  @staticmethod
+  def test_size():
+    # 가로 16   ,  세로 17
+    arr = [17, 16]
+    return arr
