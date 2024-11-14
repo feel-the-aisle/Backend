@@ -11,6 +11,26 @@ def get_store():
     return jsonify(store_names)
 
 # 편의점 지도 저장
+@map_bp.route('/store', methods=['POST'])
+def save_store():
+    data = request.get_json()
+
+    # 필수 필드 확인
+    required_fields = ['storename', 'storerow', 'storecol', 'maps']
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        # StoreService를 사용하여 데이터 저장
+        store_data = MapService.save_store(data)
+        return jsonify(store_data), 201
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": "An error occurred"}), 500
+    
+# 편의점 지도 수정
 @map_bp.route('/store/<int:store_id>', methods=['PATCH'])
 def update_store(store_id):
     data = request.get_json()
