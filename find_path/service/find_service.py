@@ -20,7 +20,7 @@ class Node:
   def __eq__(self, other):
     return self.position == other.position
 
-@staticmethod
+
 def cost_check(node, goal, D=1):  # 상하좌우에 대한 가중치
   # node: 현재 노드, position- 현재 노드의 위치를 지칭하는 것
   # goal: 목표 노드(도착 지점)
@@ -30,7 +30,7 @@ def cost_check(node, goal, D=1):  # 상하좌우에 대한 가중치
   return D * (left_right + top_bottom)
 
 # 경로 찾기
-@staticmethod
+
 def find_shortest_path(maze, start, end):
   # 시작/ 도착 지점 초기화
   startNode = Node(None, start)
@@ -106,7 +106,7 @@ def find_shortest_path(maze, start, end):
       reserveList.append(child)
 
 
-class Detectservice:
+class Findservice:
   # 지도의 가로, 세로 규격 전역 변수에 저장 (row: 가로, col: 세로)
   @staticmethod
   def get_maze_size(storeName):
