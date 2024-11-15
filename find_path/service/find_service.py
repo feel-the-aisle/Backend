@@ -335,40 +335,39 @@ class Findservice:
       num1 = 6
 
     directions = []
-    print(position)
 
-    if arr[0] > 0 and map[arr[0]][arr[1]] == num1:  # y 감소 방향
+    if map[arr[0]][arr[1]] == num1:  # y 감소 방향
       if position == 1:
         directions.append("정면에 위치합니다.")
       elif position == 3:
         directions.append("우측에 위치합니다.")
       elif position == 4:
         directions.append("좌측에 위치합니다.")
-    print(directions)
-    if arr[3] < len(map) and map[arr[2]][arr[3]] == num1:  # x 증가 방향
+    
+    if map[arr[2]][arr[3]] == num1:  # x 증가 방향
       if position == 4:
         directions.append("정면에 위치합니다.")
       elif position == 1:
         directions.append("우측에 위치합니다.")
       elif position == 2:
         directions.append("좌측에 위치합니다.")
-    print(directions)
-    if arr[4] < len(map) and map[arr[4]][arr[5]] == num1:  # y 증가 방향
+    
+    if map[arr[4]][arr[5]] == num1:  # y 증가 방향
       if position == 2:
         directions.append("정면에 위치합니다.")
       elif position == 3:
         directions.append("좌측에 위치합니다.")
       elif position == 4:
         directions.append("우측에 위치합니다.")
-    print(directions)
-    if arr[7] > 0 and map[arr[6]][arr[7]] == num1:  # x 감소 방향
+    
+    if map[arr[6]][arr[7]] == num1:  # x 감소 방향
       if position == 3:
         directions.append("정면에 위치합니다.")
       elif position == 1:
         directions.append("좌측에 위치합니다.")
       elif position == 2:
         directions.append("우측에 위치합니다.")
-    print(directions)
+
     if "정면에 위치합니다." in directions:
       if "좌측에 위치합니다." in directions and "우측에 위치합니다." in directions:
         str_end = "정면 및 양쪽 모두 위치합니다."
