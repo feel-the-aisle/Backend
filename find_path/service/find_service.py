@@ -307,7 +307,7 @@ class Findservice:
     elif endP[0] == 0:
       del arr[0]
       arr.insert(0, endP[0])
-
+ 
     if endP[1] == galo:
       del arr[3]
       arr.insert(3, endP[1])
@@ -331,7 +331,7 @@ class Findservice:
 
     directions = []
 
-    if map[arr[0]][arr[1]] == num1:  # y 감소 방향
+    if arr[0] > 0 and map[arr[0]][arr[1]] == num1:  # y 감소 방향
       if position == 1:
         directions.append("정면에 위치합니다.")
       elif position == 3:
@@ -339,7 +339,7 @@ class Findservice:
       elif position == 4:
         directions.append("좌측에 위치합니다.")
 
-    if map[arr[2]][arr[3]] == num1:  # x 증가 방향
+    if arr[3] < len(map) and map[arr[2]][arr[3]] == num1:  # x 증가 방향
       if position == 4:
         directions.append("정면에 위치합니다.")
       elif position == 1:
@@ -347,7 +347,7 @@ class Findservice:
       elif position == 2:
         directions.append("좌측에 위치합니다.")
 
-    if map[arr[4]][arr[5]] == num1:  # y 증가 방향
+    if arr[4] < len(map) and map[arr[4]][arr[5]] == num1:  # y 증가 방향
       if position == 2:
         directions.append("정면에 위치합니다.")
       elif position == 3:
@@ -355,7 +355,7 @@ class Findservice:
       elif position == 4:
         directions.append("우측에 위치합니다.")
 
-    if map[arr[6]][arr[7]] == num1:  # x 감소 방향
+    if arr[7] > 0 and map[arr[6]][arr[7]] == num1:  # x 감소 방향
       if position == 3:
         directions.append("정면에 위치합니다.")
       elif position == 1:
