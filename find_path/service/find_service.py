@@ -84,7 +84,7 @@ def find_shortest_path(maze, start, end):
       # 장애물 판단후 이동
       # <진열대> 라면 : 1 / 음료 : 2 / 과자 : 3 / 기타 : 4
       #          카운터 : 5 / 입구 : 6 / 조리(물 받기, 전자레인지) : 7 / 이동 불가 부분 나누기(쓰레기통 같은거) : 8
-      if maze[nodePosition[0]][nodePosition[1]] in [1, 2, 3, 4, 5, 7, 8]:
+      if maze[nodePosition[0]][nodePosition[1]] in [1, 2, 3, 4, 5, 6, 7, 8]:
         continue
       new_node = Node(currentNode, nodePosition)
       children.append(new_node)
@@ -206,31 +206,36 @@ class Findservice:
     oriGalo = pointGalo2
     oriSelo = pointSelo2
 
-    # 각 지점의 값이 움직임이 가능한 부분인지 확인하기
-    # <<< 가중치 순서 [ 1 우 ][ 2 좌 ][ 3 하 ][ 4 상 ] >>>
-    # 출발 가로 좌표에 대한 검사.
     if pointGalo1 == galo - 1:
-      pointGalo1 -= 1
-    elif pointGalo1 == 0:
-      pointGalo1 += 1
+      if storeMaze[pointSelo1][pointGalo1] != 0:
+        pointGalo1 -= 1
+    elif pointGalo1 == 0:    
+      if storeMaze[pointSelo1][pointGalo1] != 0:
+        pointGalo1 += 1
 
     # 출발 세로 좌표에 대한 검사
     if pointSelo1 == selo - 1:
-      pointSelo1 -= 1
+      if storeMaze[pointSelo1][pointGalo1] != 0:
+        pointSelo1 -= 1
     elif pointSelo1 == 0:
-      pointSelo1 += 1
+      if storeMaze[pointSelo1][pointGalo1] != 0:
+        pointSelo1 += 1
 
     # 도착 가로 좌표에 대한 검사
     if pointGalo2 == galo - 1:
-      pointGalo2 -= 1
+      if storeMaze[pointSelo2][pointGalo2] != 0:
+        pointGalo2 -= 1
     elif pointGalo2 == 0:
-      pointGalo2 += 1
+      if storeMaze[pointSelo2][pointGalo2] != 0:
+        pointGalo2 += 1
 
     # 도착 세로 좌표에 대한 검사
     if pointSelo2 == selo - 1:
-      pointSelo2 -= 1
+      if storeMaze[pointSelo2][pointGalo2] != 0:
+        pointSelo2 -= 1
     elif pointSelo2 == 0:
-      pointSelo2 += 1
+      if storeMaze[pointSelo2][pointGalo2] != 0:
+        pointSelo2 += 1
 
     # 출발지점 좌표 확인하기
     if maze[pointSelo1][pointGalo1] != 0:
@@ -301,14 +306,14 @@ class Findservice:
     arr.append(endP[0])     # 6 --------------------
     arr.append(endP[1] -1)  # 7
 
-    if endP[0] == selo: # 세로가 최대치로 같다
+    if endP[0] == selo-1: # 세로가 최대치로 같다
       del arr[4]
       arr.insert(4, endP[0])
     elif endP[0] == 0:
       del arr[0]
       arr.insert(0, endP[0])
  
-    if endP[1] == galo:
+    if endP[1] == galo-1:
       del arr[3]
       arr.insert(3, endP[1])
     elif endP[1] == 0:
@@ -330,6 +335,7 @@ class Findservice:
       num1 = 6
 
     directions = []
+    print(position)
 
     if arr[0] > 0 and map[arr[0]][arr[1]] == num1:  # y 감소 방향
       if position == 1:
@@ -338,7 +344,7 @@ class Findservice:
         directions.append("우측에 위치합니다.")
       elif position == 4:
         directions.append("좌측에 위치합니다.")
-
+    print(directions)
     if arr[3] < len(map) and map[arr[2]][arr[3]] == num1:  # x 증가 방향
       if position == 4:
         directions.append("정면에 위치합니다.")
@@ -346,7 +352,7 @@ class Findservice:
         directions.append("우측에 위치합니다.")
       elif position == 2:
         directions.append("좌측에 위치합니다.")
-
+    print(directions)
     if arr[4] < len(map) and map[arr[4]][arr[5]] == num1:  # y 증가 방향
       if position == 2:
         directions.append("정면에 위치합니다.")
@@ -354,7 +360,7 @@ class Findservice:
         directions.append("좌측에 위치합니다.")
       elif position == 4:
         directions.append("우측에 위치합니다.")
-
+    print(directions)
     if arr[7] > 0 and map[arr[6]][arr[7]] == num1:  # x 감소 방향
       if position == 3:
         directions.append("정면에 위치합니다.")
@@ -362,7 +368,7 @@ class Findservice:
         directions.append("좌측에 위치합니다.")
       elif position == 2:
         directions.append("우측에 위치합니다.")
-
+    print(directions)
     if "정면에 위치합니다." in directions:
       if "좌측에 위치합니다." in directions and "우측에 위치합니다." in directions:
         str_end = "정면 및 양쪽 모두 위치합니다."
