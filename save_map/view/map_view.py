@@ -21,14 +21,17 @@ def save_store():
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
-        # StoreService를 사용하여 데이터 저장
+    # StoreService를 사용하여 데이터 저장
         store_data = MapService.save_store(data)
-        return jsonify(store_data), 201
+        return jsonify({"message": "점주 지도 등록이 완료되었습니다."}), 201
 
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 404
-    except Exception as e:
-        return jsonify({"error": "An error occurred"}), 500
+    except ValueError:
+    # ValueError 발생 시 실패 메시지
+        return jsonify({"message": "점주 지도 등록에 실패하였습니다."}), 400
+
+    except Exception:
+    # 기타 예외 발생 시 실패 메시지
+        return jsonify({"message": "점주 지도 등록에 실패하였습니다."}), 500
     
 # 편의점 지도 수정
 @map_bp.route('/store/<int:store_id>', methods=['PATCH'])
